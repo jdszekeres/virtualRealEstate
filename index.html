@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Builder App</title>
+    <!-- Add your CSS stylesheet link here -->
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #left-sidebar {
+            width: 200px;
+            background: #f0f0f0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #middle-viewer {
+            flex: 1;
+            position: relative;
+        }
+
+        #right-sidebar {
+            width: 300px;
+            background: #f0f0f0;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #material-manager {
+            flex: 1;
+        }
+
+        #cost-hours-manager {
+            height: 100px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="left-sidebar">
+        <!-- Material List -->
+        <div>Material 1</div>
+        <div>Material 2</div>
+        <div>Material 3</div>
+        <!-- Add more materials as needed -->
+    </div>
+
+    <div id="middle-viewer">
+        <!-- 3D Viewer Container -->
+        <div id="3d-viewer">
+            <!-- Your 3D viewer content goes here -->
+        </div>
+    </div>
+
+    <div id="right-sidebar">
+        <div id="material-manager">
+            <!-- Material Manager (Paint, Size) -->
+            <h3>Material Manager</h3>
+            <div>
+                <label for="paint-color">Paint Color:</label>
+                <input type="color" id="paint-color">
+            </div>
+            <div>
+                <label for="material-size">Material Size:</label>
+                <input type="text" id="material-size" placeholder="Enter size">
+            </div>
+        </div>
+
+        <div id="cost-hours-manager">
+            <!-- Cost and Man Hours Manager -->
+            <h3>Cost and Man Hours</h3>
+            <div>
+                <p>Total Cost: $0.00</p>
+                <p>Total Man Hours: 0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add your JavaScript script tag here for interactivity -->
+
+</body>
+</html>

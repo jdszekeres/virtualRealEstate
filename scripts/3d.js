@@ -14,24 +14,24 @@ _3d_viewer.appendChild(renderer.domElement);
 
 // Add OrbitControls
 var controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.25;
-controls.screenSpacePanning = false;
-controls.maxPolarAngle = Math.PI / 2;
+// controls.enableDamping = true;
+// controls.dampingFactor = 0.25;
+// controls.screenSpacePanning = false;
+// controls.maxPolarAngle = Math.PI / 2;
 
-var planeGeometry = new THREE.PlaneGeometry(1,1);
-var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide });
+var planeGeometry = new THREE.PlaneGeometry(10,10, 10,10);
+var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide,wireframe: true });
 var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
 
-camera.position.z = 5;
-camera.rotation.z = 50;
+camera.position.z = 20;
+
 var animate = function () {
     requestAnimationFrame(animate);
 
     // Update controls
     controls.update();
-
+    // camera.rotation.y ++;
     renderer.render(scene, camera);
 };
 if ( WebGL.isWebGLAvailable() ) {

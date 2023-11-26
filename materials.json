@@ -1,0 +1,65 @@
+[
+    {
+        "name": "Metals",
+        "id": "vre.metals",
+        "type": "class",
+        "children": [
+            {
+                "name": "Sheet Metals",
+                "id": "vre.metals.sheet_metals",
+                "type": "class",
+                "children": [
+                    {
+                        "name": "Aluminum",
+                        "id": "vre.metals.sheet_metals.aluminum",
+                        "type": "raw_material",
+                        "properties": {
+                            "size": {
+                                "min_width": 1,
+                                "min_height": 1,
+                                "min_depth": 0.125,
+                                "max_width": 100,
+                                "max_height": 100,
+                                "max_depth": 2,
+                                "default_width": 10,
+                                "default_height": 10,
+                                "default_depth": 1
+                            },
+                            "colors": [
+                                "848789"
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name":"Cement",
+        "id":"vre.cement",
+        "type":"class",
+        "children":[
+            {
+                "name":"Brick",
+                "id":"vre.cement.brick",
+                "type":"raw_material",
+                "properties": {
+                    "size": {
+                        "min_width": 0.203,
+                        "min_height": 0.92,
+                        "min_depth": 0.57,
+                        "max_width": 0.203,
+                        "max_height": 0.92,
+                        "max_depth": 0.57,
+                        "default_width":0.203,
+                        "default_height": 0.92,
+                        "default_depth": 0.57
+                    },
+                    "colors": [
+                        "A23617"
+                    ]
+                }
+            }
+        ]
+    }
+]

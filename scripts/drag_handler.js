@@ -18,7 +18,7 @@ function register_handler(ele,data) {
         draggedObject = new THREE.Mesh(size, material);
 
         // Calculate the offset between the mouse click position and the center of the dragged object
-        draggedObject.position.set(0,0,0);
+        draggedObject.position.set(0,0,data.properties.size.default_depth/2);
 
         // Add the object to the scene
         _3d.blocks.push(draggedObject);
@@ -36,21 +36,36 @@ function onpointermove(event) {
     pointer.x = ( x / rect.width ) *  2 - 1;
     pointer.y = ( y / rect.height) * - 2 + 1
     
-    console.log( pointer.x, pointer.y );
 }
 function selected_func() {
-
+    
     raycaster.setFromCamera( pointer, _3d.camera ); 
     let intersects = raycaster.intersectObjects( _3d.blocks );
     if ( intersects.length > 0) {
-        console.log(intersects);
-        intersects[ 0 ].object.material.color.setRGB(255,0,0)
+        selected = intersects[0];
         _3d.renderer.render( _3d.scene, _3d.camera );
+    } else {
+        selected = null;
     }
+}
+function handle_keyboard(event) {
+    event.preventDefault();
     
-
+    if ( selected ) {
+        console.log(event);
+        if (event.which === 38) {
+            selected.object.position.y += 0.05;
+        } else if (event.which === 40) {
+            selected.object.position.y -= 0.05;
+        } else if (event.which === 39) {
+            selected.object.position.x += 0.05;
+        } else if (event.which === 38) {
+            selected.object.position.x -= 0.05;
+        }
+    }
 }
 _3d.renderer.domElement.addEventListener("mousemove",onpointermove,false);
+document.addEventListener("keydown",handle_keyboard);
 setInterval(selected_func,10)
 export {register_handler,pointer,selected};
 

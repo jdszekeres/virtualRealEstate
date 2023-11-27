@@ -6,7 +6,7 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 const _3d_viewer = document.getElementById('3d-viewer');
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, _3d_viewer.offsetWidth / document.body.offsetHeight, 0.1, 1000);
-
+var blocks = [];
 // Specify the 3D viewer div as the container for the renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(_3d_viewer.offsetWidth, document.body.offsetHeight);
@@ -14,23 +14,24 @@ _3d_viewer.appendChild(renderer.domElement);
 
 // Add OrbitControls
 var controls = new OrbitControls(camera, renderer.domElement);
-// controls.enableDamping = true;
-// controls.dampingFactor = 0.25;
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
 // controls.screenSpacePanning = false;
 // controls.maxPolarAngle = Math.PI / 2;
 
-var planeGeometry = new THREE.PlaneGeometry(10,10, 10,10);
+var planeGeometry = new THREE.PlaneGeometry(100,100, 10,10); //size of plot in meters
 var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide,wireframe: true });
 var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
 
-camera.position.z = 20;
+camera.position.z = 120;
 
 var animate = function () {
     requestAnimationFrame(animate);
 
     // Update controls
     controls.update();
+    
     // camera.rotation.y ++;
     renderer.render(scene, camera);
 };
@@ -45,3 +46,6 @@ if ( WebGL.isWebGLAvailable() ) {
 	document.getElementById( 'container' ).appendChild( warning );
 
 }
+
+
+export {camera,renderer,scene,blocks};

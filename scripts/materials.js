@@ -1,15 +1,18 @@
-var materials;
-
-fetch("/materials.json").then((x)=>x.json()).then((y)=>{materials = y}).then(()=>{createDetails(materials,document.getElementById("materials-list"));});
-
-function createDetails(jsonData, parentDetails, depth = 0) {
+import * as handlers from './drag_handler.js';
+export var materials;
+export var non_class = [];
+export function loadMaterials(_THREE) {
+    fetch("/materials.json").then((x)=>x.json()).then((y)=>{materials = y}).then(()=>{createDetails(materials,document.getElementById("materials-list"),_THREE);});
+}
+function createDetails(jsonData, parentDetails, handler,_THREE,depth = 0) {
     jsonData.forEach(item => {
-        padding = depth*5+"px"
+        let padding = depth*5+"px"
         if (item.children) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
             const propertyList = document.createElement("ul");
             details.style.paddingLeft = padding;
+            details.id=item.id;
             summary.textContent = item.name;
             details.appendChild(summary);
 
@@ -28,10 +31,17 @@ function createDetails(jsonData, parentDetails, depth = 0) {
             createDetails(item.children, details, depth + 1);
         } else {
                 jsonData.forEach(function (child) {
-                div = document.createElement('div');
+                let div = document.createElement('div');
+                div.id=child.id;
                 div.innerHTML = child.name;
-                div.style.paddingLeft = padding
+                div.style.paddingLeft = padding;
+                child.element = div;
+                
+                handlers.register_handler(div,child,_THREE);
                 parentDetails.appendChild(div); 
+                non_class.push(child);
+                
+                
             })
         }
     });

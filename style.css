@@ -39,3 +39,10 @@ body {
     width: 100%;
     text-align: center;
 }
+label[for=material-width-slider], label[for=material-height-slider], label[for=material-depth-slider] {
+    width: 50px;
+    display: inline-block
+}
+#material-width, #material-height, #material-depth  {
+    width: 50px;
+}

@@ -1,4 +1,6 @@
- # Logs
+.replit
+replit.nix
+# Logs
 logs
 *.log
 npm-debug.log*

@@ -26,27 +26,32 @@
         <div id="material-manager">
             <!-- Material Manager (Paint, Size) -->
             <h3>Material Manager</h3>
+            <h4 id="mat-name">None Selected</h4>
             <div>
-                <label for="paint-color">Paint Color:</label>
+                <label for="paint-color">Color:</label>
                 <div id="color-selector">
                     
                 </div>
+            </div>
+            <div>
+            <p>Position</p>
+            
             </div>
             <div>
                 <p>Material Size:</p>
                 <br>
                 <label for="material-width-slider">Width: </label>
                 <input type="range" id="material-width-slider" min="1" max="100" value="1">
-                <input type="number" id="material-width" placeholder="Enter size" value=1>
+                <span id="material-width"></span>
 
                 <br>
                 <label for="material-height-slider">Height: </label>
                 <input type="range" id="material-height-slider" min="1" max="100" value="1">
-                <input type="number" id="material-height" placeholder="Enter size" value=1>
+                <span id="material-height"></span>
                 <br>
                 <label for="material-depth-slider">Depth: </label>
                 <input type="range" id="material-depth-slider" min="1" max="100" value="1">
-                <input type="number" id="material-depth" placeholder="Enter size" value=1>
+                <span id="material-depth"></span>
             </div>
         </div>
 

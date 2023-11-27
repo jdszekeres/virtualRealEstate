@@ -14,7 +14,11 @@ function register_handler(ele, data) {
 
         // Create a new mesh based on the material clicked in the sidebar
         var size = new THREE.BoxGeometry(data.properties.size.default_width, data.properties.size.default_height, data.properties.size.default_depth)
-        var material = new THREE.MeshBasicMaterial({ color: "#" + data.properties.colors[0] });
+        if (data.properties.colors !== "all") {
+            var material = new THREE.MeshBasicMaterial({ color: "#" + data.properties.colors[0] });
+        } else {
+            var material = new THREE.MeshBasicMaterial({ color: "red" });
+        }
         draggedObject = new THREE.Mesh(size, material);
         draggedObject.userData.data = data;
         // Calculate the offset between the mouse click position and the center of the dragged object
@@ -42,6 +46,8 @@ function selected_func() {
     raycaster.setFromCamera(pointer, _3d.camera);
     let intersects = raycaster.intersectObjects(_3d.blocks);
     if (intersects.length > 0) {
+        
+        if (selected){if (selected.object.uuid === intersects[0].object.uuid){return;}} //dont't call it if it's already selected
         selected = intersects[0];
         _properties.set_materials_manager(selected.object.userData.data, selected.object);
         _3d.renderer.render(_3d.scene, _3d.camera);
@@ -50,23 +56,26 @@ function selected_func() {
     }
 }
 function handle_keyboard(event) {//move object
-    event.preventDefault();
+    
 
     if (selected) {
-        console.log(event);
         if (event.keyCode === 38) {
+            event.preventDefault();
             selected.object.position.y += 0.05;
         } else if (event.keyCode === 40) {
+            event.preventDefault();
             selected.object.position.y -= 0.05;
         } else if (event.keyCode === 39) {
+            event.preventDefault();
             selected.object.position.x += 0.05;
         } else if (event.keyCode === 37) {
+            event.preventDefault();    
             selected.object.position.x -= 0.05;
         }
     }
 }
 _3d.renderer.domElement.addEventListener("mousemove", onpointermove, false);
 document.addEventListener("keydown", handle_keyboard);
-setInterval(selected_func, 10)
+_3d.renderer.domElement.addEventListener("click",selected_func)
 export { register_handler, pointer, selected };
 

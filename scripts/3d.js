@@ -16,8 +16,7 @@ _3d_viewer.appendChild(renderer.domElement);
 var controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
-// controls.screenSpacePanning = false;
-// controls.maxPolarAngle = Math.PI / 2;
+controls.screenSpacePanning = false;
 
 var planeGeometry = new THREE.PlaneGeometry(100,100, 10,10); //size of plot in meters
 var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide,wireframe: true });

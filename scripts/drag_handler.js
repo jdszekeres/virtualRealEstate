@@ -29,8 +29,13 @@ function register_handler(ele,data) {
 
 }
 function onpointermove(event) {
-    pointer.x = ( event.clientX / _3d.renderer.domElement.offsetWidth ) * 2 - 1;
-	pointer.y = - ( event.clientY / _3d.renderer.domElement.offsetHeight ) * 2 + 1;
+    const rect = _3d.renderer.domElement.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    pointer.x = ( x / rect.width ) *  2 - 1;
+    pointer.y = ( y / rect.height) * - 2 + 1
+    
     console.log( pointer.x, pointer.y );
 }
 function selected_func() {
@@ -39,9 +44,8 @@ function selected_func() {
     let intersects = raycaster.intersectObjects( _3d.blocks );
     if ( intersects.length > 0) {
         console.log(intersects);
-        console.log(_3d.blocks);
-        intersects[ 0 ].material = THREE.MeshBasicMaterial({color: 0xff00ff})
-        _3d.renderer.render( scene, camera );
+        intersects[ 0 ].object.material.color.setRGB(255,0,0)
+        _3d.renderer.render( _3d.scene, _3d.camera );
     }
     
 

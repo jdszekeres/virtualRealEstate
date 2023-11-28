@@ -46,8 +46,15 @@ function selected_func() {
     raycaster.setFromCamera(pointer, _3d.camera);
     let intersects = raycaster.intersectObjects(_3d.blocks);
     if (intersects.length > 0) {
-        
-        if (selected){if (selected.object.uuid === intersects[0].object.uuid){return;}} //dont't call it if it's already selected
+        console.log(Array.from(intersects))
+        do {
+            
+            if (intersects[0].object.userData.hasOwnProperty("data")) {
+                break;
+            }
+            intersects.pop()
+        } while (true)
+        if (selected) { if (selected.object.uuid === intersects[0].object.uuid) { return; } } //dont't call it if it's already selected
         selected = intersects[0];
         _properties.set_materials_manager(selected.object.userData.data, selected.object);
         _3d.renderer.render(_3d.scene, _3d.camera);
@@ -56,7 +63,7 @@ function selected_func() {
     }
 }
 function handle_keyboard(event) {//move object
-    
+
 
     if (selected) {
         if (event.keyCode === 38) {
@@ -69,13 +76,13 @@ function handle_keyboard(event) {//move object
             event.preventDefault();
             selected.object.position.x += 0.05;
         } else if (event.keyCode === 37) {
-            event.preventDefault();    
+            event.preventDefault();
             selected.object.position.x -= 0.05;
         }
     }
 }
 _3d.renderer.domElement.addEventListener("mousemove", onpointermove, false);
 document.addEventListener("keydown", handle_keyboard);
-_3d.renderer.domElement.addEventListener("click",selected_func)
+_3d.renderer.domElement.addEventListener("click", selected_func)
 export { register_handler, pointer, selected };
 

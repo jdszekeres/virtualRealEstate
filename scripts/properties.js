@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as _3d from './3d.js';
 const name = document.getElementById("mat-name");
 const width_slider = document.getElementById("material-width-slider")
 const height_slider = document.getElementById("material-height-slider")
@@ -9,6 +10,9 @@ const height_input = document.getElementById("material-height")
 const depth_input = document.getElementById("material-depth")
 
 function set_materials_manager(data,object) {//call this when we select an object
+    const edges = new THREE.EdgesGeometry( object.geometry ); 
+    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
+    object.add( line );
     console.log("called")
     name.innerHTML = data["name"]
     let size = data.properties.size
@@ -43,7 +47,6 @@ function set_materials_manager(data,object) {//call this when we select an objec
     }
     setup_sliders()
     function change_all() {
-        console.log('changing')
         change_length_based_on_slider(width_slider,width_input)
         change_length_based_on_slider(height_slider,height_input)
         change_length_based_on_slider(depth_slider,depth_input)
@@ -99,7 +102,7 @@ function change_object_size(object,size,width,height,depth) {
         height / default_height,
         depth / default_depth
     
-    );
+    ); //set the size proportional to the default size
 }
 
 export {set_materials_manager}

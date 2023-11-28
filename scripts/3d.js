@@ -39,7 +39,7 @@ var controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 controls.screenSpacePanning = false;
-
+controls.maxDistance = 1000;
 var planeGeometry = new THREE.PlaneGeometry(100,100, 10,10); //size of plot in meters followed by grid size 100m/10=10m spacing
 var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide,wireframe: true,});
 var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);

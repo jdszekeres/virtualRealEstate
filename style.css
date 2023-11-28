@@ -51,10 +51,22 @@ label[for=material-width-slider], label[for=material-height-slider], label[for=m
     flex-wrap: wrap;
     padding: 0;
 }
+#rot {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+}
 #pos p {
     width: 100%;
 }
+#rot p {
+    width: 100%;
+}
 #pos input {
+    margin: 0;
+    width: 30%
+}
+#rot input {
     margin: 0;
     width: 30%
 }

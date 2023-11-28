@@ -9,6 +9,14 @@ const width_input = document.getElementById("material-width")
 const height_input = document.getElementById("material-height")
 const depth_input = document.getElementById("material-depth")
 
+const pos_x = document.getElementById("px")
+const pos_y = document.getElementById("py")
+const pos_z = document.getElementById("pz")
+
+const rot_x = document.getElementById("rx")
+const rot_y = document.getElementById("ry")
+const rot_z = document.getElementById("rz")
+
 function set_materials_manager(data,object) {//call this when we select an object
     const edges = new THREE.EdgesGeometry( object.geometry ); 
     const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 

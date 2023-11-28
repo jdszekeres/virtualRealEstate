@@ -17,13 +17,13 @@
                             "size": {
                                 "min_width": 1,
                                 "min_height": 1,
-                                "min_depth": 0.125,
+                                "min_depth": 0.0125,
                                 "max_width": 100,
                                 "max_height": 100,
-                                "max_depth": 2,
+                                "max_depth": 0.2,
                                 "default_width": 10,
                                 "default_height": 10,
-                                "default_depth": 1
+                                "default_depth": 0.1
                             },
                             "colors": [
                                 "848789"
@@ -77,13 +77,13 @@
                     "size": {
                         "min_width": 1,
                         "min_height": 1,
-                        "min_depth": 0.125,
+                        "min_depth": 0.0125,
                         "max_width": 100,
                         "max_height": 100,
-                        "max_depth": 2,
+                        "max_depth": 0.2,
                         "default_width": 10,
                         "default_height": 10,
-                        "default_depth": 1
+                        "default_depth": 0.1
                     },
                     "colors":"all",
                     "shine":100

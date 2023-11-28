@@ -23,7 +23,7 @@ function register_handler(ele, data) {
         draggedObject.userData.data = data;
         // Calculate the offset between the mouse click position and the center of the dragged object
         draggedObject.position.set(0, 0, data.properties.size.default_depth / 2);
-        _3d.camera.position.z = 10 + draggedObject.position.z;
+        _3d.camera.position.z = 20 + draggedObject.position.z;
         // Add the object to the scene
         _3d.blocks.push(draggedObject);
         _3d.scene.add(draggedObject);
@@ -45,10 +45,12 @@ function selected_func() {
 
     raycaster.setFromCamera(pointer, _3d.camera);
     let intersects = raycaster.intersectObjects(_3d.blocks);
+    _properties.unregister_materials(selected);//don't actually delete it, just remove it from materials manager
     if (intersects.length > 0) {
-        console.log(Array.from(intersects))
         do {
-            
+            if (intersects.length === 0) {
+                intersects.push(selected)
+            }
             if (intersects[0].object.userData.hasOwnProperty("data")) {
                 break;
             }
@@ -59,6 +61,7 @@ function selected_func() {
         _properties.set_materials_manager(selected.object.userData.data, selected.object);
         _3d.renderer.render(_3d.scene, _3d.camera);
     } else {
+
         selected = null;
     }
 }
@@ -78,7 +81,8 @@ function handle_keyboard(event) {//move object
         } else if (event.keyCode === 37) {
             event.preventDefault();
             selected.object.position.x -= 0.05;
-        }
+        } 
+        _3d.renderer.render(_3d.scene, _3d.camera);
     }
 }
 _3d.renderer.domElement.addEventListener("mousemove", onpointermove, false);

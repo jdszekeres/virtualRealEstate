@@ -35,19 +35,20 @@ function set_materials_manager(data,object) {//call this when we select an objec
         width_slider.value = size.default_width
         height_slider.value = size.default_height
         depth_slider.value = size.default_depth
-    } else {
+    } 
+    else {
         width_slider.value = object.scale.x * size.default_width
         height_slider.value = object.scale.y * size.default_height
         depth_slider.value = object.scale.z * size.default_depth
     }
     if (size.max_width - size.min_width < 10) {
-        width_slider.step = 0.025
+        width_slider.step = 0.0025
     }
     if (size.max_height - size.min_height < 10) {
-        height_slider.step = 0.025
+        height_slider.step = 0.0025
     }
     if (size.max_depth - size.min_depth < 10) {
-        depth_slider.step = 0.025
+        depth_slider.step = 0.0025
     }
     change_length_based_on_slider(width_slider,width_input)
     change_length_based_on_slider(height_slider,height_input)
@@ -61,9 +62,9 @@ function set_materials_manager(data,object) {//call this when we select an objec
         change_object_size(object,data.properties.size,width_input.innerText,height_input.innerText,depth_input.innerText)
 
     }
-    width_slider.addEventListener("change",change_all)
-    height_slider.addEventListener("change",change_all)
-    depth_slider.addEventListener("change",change_all)
+    width_slider.onchange = change_all
+    height_slider.onchange = change_all
+    depth_slider.onchange = change_all
     
     document.getElementById("color-selector").innerHTML=""
     if (data.properties.colors !== "all") {
@@ -93,9 +94,43 @@ function set_materials_manager(data,object) {//call this when we select an objec
         })
         document.getElementById("color-selector").appendChild(color_picker);
     }
+
+    pos_x.value = object.position.x
+    pos_y.value = object.position.y
+    pos_z.value = object.position.z
+
+    rot_x.value = object.rotation.x
+    rot_y.value = object.rotation.y
+    rot_z.value = object.rotation.z
+
+    
+    
+    pos_x.addEventListener("input",()=>{object.position.x = pos_x.value})
+    pos_y.addEventListener("input",()=>{object.position.y = pos_y.value})
+    pos_z.addEventListener("input",()=>{object.position.z = pos_z.value})
+
+    rot_x.addEventListener("input",()=>{object.rotation.x = rot_x.value})
+    rot_y.addEventListener("input",()=>{object.rotation.y = rot_y.value})
+    rot_z.addEventListener("input",()=>{object.rotation.z = rot_z.value})
+}
+function unregister_materials(object) {
+    
+    if (object) {
+        object=object.object
+        if (object.children) {
+            object.remove(...object.children);
+            _3d.renderer.render(_3d.scene,_3d.camera)
+        }
+        name.innerHTML = "None Selected"
+
+        width_slider.onchange = () => {}
+        height_slider.onchange = () => {}
+        depth_slider.onchange = () => {}
+        
+    }
 }
 function change_length_based_on_slider(slider,input) {
-    input.innerText = slider.value;
+    input.innerText = slider.value + "m";
 }
 function change_object_size(object,size,width,height,depth) {
     width = parseFloat(width)
@@ -113,4 +148,4 @@ function change_object_size(object,size,width,height,depth) {
     ); //set the size proportional to the default size
 }
 
-export {set_materials_manager}
+export {set_materials_manager,unregister_materials}

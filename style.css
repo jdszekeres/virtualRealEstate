@@ -2,8 +2,12 @@ body {
     margin: 0;
     display: flex;
     height: 100vh;
+    overflow: hidden
 }
-
+#left-sidebar,#middle-viewer,#right-sidebar {
+    margin: none;
+    padding: none;
+}
 #left-sidebar {
     width: 200px;
     background: #f0f0f0;

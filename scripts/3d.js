@@ -8,6 +8,7 @@ const _3d_viewer = document.getElementById('3d-viewer');
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, _3d_viewer.offsetWidth / document.body.offsetHeight, 0.1, 1000);
 var blocks = [];
+var map = "";
 function init_sky() {
     let sky = new Sky();
     let sun = new THREE.Vector3();
@@ -40,8 +41,8 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 controls.screenSpacePanning = false;
 controls.maxDistance = 1000;
-var planeGeometry = new THREE.PlaneGeometry(100,100, 10,10); //size of plot in meters followed by grid size 100m/10=10m spacing
-var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide,wireframe: true,});
+var planeGeometry = new THREE.PlaneGeometry(100,100.2,1,1); //size of plot in meters followed by grid size 100m/10=10m spacing
+var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide,wireframe: true});
 var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
 
@@ -68,5 +69,18 @@ if ( WebGL.isWebGLAvailable() ) {
 
 }
 
+function modify_plane(data_block) {
+    let dimensions = data_block.dimensions;
+    planeMesh.scale.set(dimensions[0]/100,dimensions[1]/100,1);
+    console.log(data_block);
+    console.log(planeMesh);
+    new THREE.TextureLoader().load(
+        data_block.url, 
+        texture => { 
+                planeMesh.material = new THREE.MeshBasicMaterial({map:texture});
+                planeMesh.material.map.needsUpdate = true;
+        }
+    )
+}
 
-export {camera,renderer,scene,blocks};
+export {camera,renderer,scene,blocks,modify_plane};

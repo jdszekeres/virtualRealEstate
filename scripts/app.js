@@ -14,5 +14,5 @@ _Materials.loadMaterials(_drag_handler.register_handler, _THREE);
 //     ]
 // )
 
-document.querySelector("#rmenu ul li a:first-of-type").addEventListener("click",_tilemap.openMapPopup)
+document.querySelector("#rmenu ul li a:first-of-type").addEventListener("click",()=>{_tilemap.openMapPopup(_THREE)})
 

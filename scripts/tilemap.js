@@ -2,6 +2,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import haversine from 'haversine-distance'
+
 window.type = true; //bugfix
 function until(conditionFunction) {
 
@@ -19,7 +21,7 @@ async function stitchTiles(tilemapUrl, zoom, bounds) {
   let minLng = bounds[1];
   let maxLat = bounds[2];
   let maxLng = bounds[3];
-  
+
   let minX = Math.floor((minLng + 180) / 360 * Math.pow(2, zoom));
   let maxX = Math.floor((maxLng + 180) / 360 * Math.pow(2, zoom));
   let minY = Math.floor((1 - Math.log(Math.tan(maxLat * Math.PI / 180) + 1 / Math.cos(maxLat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
@@ -34,8 +36,14 @@ async function stitchTiles(tilemapUrl, zoom, bounds) {
   maxX = aX;
   maxY = aY;
   console.log(`${maxX-minX} x ${maxY-minY} = ${(maxX-minX)*(maxY-minY)} tiles`);
-  
-
+  if ((maxX-minX)*(maxY-minY)>100) {//really high-res
+      console.log("high-res at layer "+zoom+" lowering to "+(zoom-1));
+      return await stitchTiles(tilemapUrl, zoom-1, bounds);
+  }
+  var dimensions = [
+      haversine([minLat, minLng], [minLat, maxLng]),
+      haversine([minLat,minLng], [maxLat, minLng])
+  ]
   let done = new Array(maxX - minX + 1).fill(false).map(() => new Array(maxY - minY + 1).fill(false));
     const width = (maxX - minX + 1) * tileSize;
   const height = (maxY - minY + 1) * tileSize;
@@ -64,15 +72,16 @@ async function stitchTiles(tilemapUrl, zoom, bounds) {
       image.crossOrigin = "";
 
       // Draw the tile onto the canvas
-     
+
      }
   }
 
   // Convert the canvas to a base64 URL
     await until(_=>done.flat().every(x => x === true));
-    return canvas.toDataURL();
+    return {url:canvas.toDataURL(),dimensions:dimensions};
 }
-function openMapPopup() {
+
+function openMapPopup(THREE) {
     let dialog = document.createElement('dialog');
     dialog.style="position:absolute;width:50%;height:50%;top:25%;left:25%"
     let map_div = document.createElement("div");
@@ -115,11 +124,12 @@ function openMapPopup() {
         draw: false
     });
     var drawControl = new L.Control.Draw(options);
+
+    var bbox = null;
     map.addControl(drawControl);
     map.on(L.Draw.Event.CREATED, function (e) {
     var layer = e.layer;
-
-
+        bbox=layer.getBounds();
         layer.addTo(editableLayers);
         drawControl.remove(map);
         drawControlEditOnly.addTo(map)
@@ -127,8 +137,29 @@ function openMapPopup() {
     map.on("draw:deleted", function(e) {
         drawControlEditOnly.remove(map);
         drawControl.addTo(map);
+        bbox=null;
     });
     document.body.appendChild(dialog);
+    let cancel_button = document.createElement("button")
+    cancel_button.innerText = "cancel";
+    cancel_button.addEventListener("click",()=>{map.off();map.remove();dialog.remove();})
+    let submit_button = document.createElement("button")
+    submit_button.innerText = "submit";
+    submit_button.addEventListener("click",()=>{
+        if (bbox === null) {return;}
+        let bbox_ne = bbox.getNorthEast();
+        let bbox_sw = bbox.getSouthWest();
+        let bbox_arr = [bbox_ne.lat,bbox_ne.lng,bbox_sw.lat,bbox_sw.lng];
+        stitchTiles("https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=JPWduKmbflkklrVwwG14",22,bbox_arr).then((response)=>{THREE.modify_plane(response)});
+        map.off();
+        map.remove();
+        dialog.remove();
+    
+            
+        }
+    )
+    dialog.appendChild(cancel_button);
+    dialog.append(submit_button);
     dialog.show();
     dialog.focus();
     map.invalidateSize();

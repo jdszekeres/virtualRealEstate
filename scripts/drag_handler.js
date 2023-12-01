@@ -32,6 +32,7 @@ function register_handler(ele, data) {
     ele.addEventListener('mousedown', onMaterialMouseDown, false);
 
 }
+
 function onpointermove(event) {
     const rect = _3d.renderer.domElement.getBoundingClientRect();
     const x = event.clientX - rect.left;

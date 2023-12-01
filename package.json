@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "leaflet": "^1.9.4",
     "three": "^0.158.0"
   },
   "devDependencies": {
+    "leaflet-draw": "^1.0.4",
     "vite": "^5.0.2"
   }
 }

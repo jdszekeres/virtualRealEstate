@@ -88,10 +88,10 @@ function set_materials_manager(data,object) {//call this when we select an objec
         let color_picker = document.createElement("input")
         color_picker.type = "color"
         color_picker.value = "#ff0000"
-        color_picker.addEventListener("input",function () {
+        color_picker.oninput=function () {
             object.material = new THREE.MeshBasicMaterial({ color: color_picker.value });
         
-        })
+        }
         document.getElementById("color-selector").appendChild(color_picker);
     }
 
@@ -99,19 +99,19 @@ function set_materials_manager(data,object) {//call this when we select an objec
     pos_y.value = object.position.y
     pos_z.value = object.position.z
 
-    rot_x.value = object.rotation.x
-    rot_y.value = object.rotation.y
-    rot_z.value = object.rotation.z
+    rot_x.value = THREE.MathUtils.radToDeg(object.rotation.x)
+    rot_y.value = THREE.MathUtils.radToDeg(object.rotation.y)
+    rot_z.value = THREE.MathUtils.radToDeg(object.rotation.z)
 
     
     
-    pos_x.addEventListener("input",()=>{object.position.x = pos_x.value})
-    pos_y.addEventListener("input",()=>{object.position.y = pos_y.value})
-    pos_z.addEventListener("input",()=>{object.position.z = pos_z.value})
+    pos_x.oninput= ()=>{object.position.x = parseFloat(pos_x.value);object.position.needsUpdate=true}
+    pos_y.oninput= ()=>{object.position.y = parseFloat(pos_y.value)}
+    pos_z.oninput= ()=>{object.position.z = parseFloat(pos_z.value)}
 
-    rot_x.addEventListener("input",()=>{object.rotation.x = rot_x.value})
-    rot_y.addEventListener("input",()=>{object.rotation.y = rot_y.value})
-    rot_z.addEventListener("input",()=>{object.rotation.z = rot_z.value})
+    rot_x.oninput= ()=>{object.rotation.x = parseFloat(THREE.MathUtils.degToRad(rot_x.value));object.rotation.needsUpdate=true;console.log(object)}
+    rot_y.oninput= ()=>{object.rotation.y = parseFloat(THREE.MathUtils.degToRad(rot_y.value))}
+    rot_z.oninput= ()=>{object.rotation.z = parseFloat(THREE.MathUtils.degToRad(rot_z.value))}
 }
 function unregister_materials(object) {
     
@@ -126,6 +126,14 @@ function unregister_materials(object) {
         width_slider.onchange = () => {}
         height_slider.onchange = () => {}
         depth_slider.onchange = () => {}
+        
+        pos_x.oninput = ()=>{}
+        pos_y.oninput = ()=>{}
+        pos_z.oninput = ()=>{}
+
+        rot_x.oninput = ()=>{}
+        rot_y.oninput = ()=>{}
+        rot_z.oninput = ()=>{}
         
     }
 }

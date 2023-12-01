@@ -82,6 +82,21 @@ function handle_keyboard(event) {//move object
         } else if (event.keyCode === 37) {
             event.preventDefault();
             selected.object.position.x -= 0.05;
+        } else if (event.keyCode === 8) {
+            event.preventDefault();
+            let UUID = selected.object.uuid;
+            let id=-1;
+            for (let i=0;i<_3d.blocks.length;i++) {
+                if (_3d.blocks[i].uuid === UUID) {
+                    id = 1
+                }
+            }
+            _properties.unregister_materials(selected.object);
+            _3d.scene.remove(selected.object);
+            console.log(id)
+            _3d.blocks.pop(id);
+            selected = null;
+        
         } 
         _3d.renderer.render(_3d.scene, _3d.camera);
     }

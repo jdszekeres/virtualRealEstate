@@ -71,7 +71,7 @@ if ( WebGL.isWebGLAvailable() ) {
 
 function modify_plane(data_block) {
     let dimensions = data_block.dimensions;
-    planeMesh.scale.set(dimensions[0]/100,dimensions[1]/100,1);
+    planeMesh.scale.set(dimensions[1]/100,dimensions[0]/100,1);
     console.log(data_block);
     console.log(planeMesh);
     new THREE.TextureLoader().load(

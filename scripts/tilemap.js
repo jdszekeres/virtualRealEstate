@@ -14,7 +14,7 @@ function until(conditionFunction) {
 
   return new Promise(poll);
 }
-async function stitchTiles(tilemapUrl, zoom, bounds) {
+async function stitchTiles(apikey, zoom, bounds) {
   // Calculate the width and height of the resulting image
   const tileSize = 512; // Assuming standard tile size
   let minLat = bounds[0];
@@ -22,63 +22,11 @@ async function stitchTiles(tilemapUrl, zoom, bounds) {
   let maxLat = bounds[2];
   let maxLng = bounds[3];
 
-  let minX = Math.floor((minLng + 180) / 360 * Math.pow(2, zoom));
-  let maxX = Math.floor((maxLng + 180) / 360 * Math.pow(2, zoom));
-  let minY = Math.floor((1 - Math.log(Math.tan(maxLat * Math.PI / 180) + 1 / Math.cos(maxLat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
-  let maxY = Math.floor((1 - Math.log(Math.tan(minLat * Math.PI / 180) + 1 / Math.cos(minLat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
-
-  let iX = Math.min(minX, maxX);
-  let iY = Math.min(minY,maxY);
-  let aX = Math.max(minX, maxX);
-  let aY = Math.max(minY,maxY);
-  minX = iX;
-  minY = iY;
-  maxX = aX;
-  maxY = aY;
-  console.log(`${maxX-minX} x ${maxY-minY} = ${(maxX-minX)*(maxY-minY)} tiles`);
-  if ((maxX-minX)*(maxY-minY)>100) {//really high-res
-      console.log("high-res at layer "+zoom+" lowering to "+(zoom-1));
-      return await stitchTiles(tilemapUrl, zoom-1, bounds);
-  }
   var dimensions = [
       haversine([minLat, minLng], [minLat, maxLng]),
       haversine([minLat,minLng], [maxLat, minLng])
   ]
-  let done = new Array(maxX - minX + 1).fill(false).map(() => new Array(maxY - minY + 1).fill(false));
-    const width = (maxX - minX + 1) * tileSize;
-  const height = (maxY - minY + 1) * tileSize;
-
-  // Create a canvas to draw the stitched image
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d');
-
-  // Loop through each tile and draw it onto the canvas
-  for (let x = minX; x <= maxX; x++) {
-    for (let y = minY; y <= maxY; y++) {
-      const tileUrl = tilemapUrl.replace("{z}",zoom).replace("{x}",x).replace("{y}",y);
-      // Fetch the tile image
-      // const response = await fetch(tileUrl);
-      // const blob = await response.blob();
-
-      // Create an Image object from the blob
-      const image = new Image();
-        image.onload = () => {
-          context.drawImage(image, (x - minX) * tileSize, (y - minY) * tileSize, tileSize, tileSize);
-          done[x - minX][y - minY] = true;
-        }
-      image.src = tileUrl;
-      image.crossOrigin = "";
-
-      // Draw the tile onto the canvas
-
-     }
-  }
-
-  // Convert the canvas to a base64 URL
-    await until(_=>done.flat().every(x => x === true));
-    return {url:canvas.toDataURL(),dimensions:dimensions};
+    return {url:`https://www.mapquestapi.com/staticmap/v5/map?boundingBox=${minLat},${minLng},${maxLat},${maxLng}&size=${Math.ceil(dimensions[1]*10)},${Math.ceil(dimensions[0]*10)}&type=sat&key=${apikey}`,dimensions:dimensions};
 }
 
 function openMapPopup(THREE) {
@@ -129,10 +77,14 @@ function openMapPopup(THREE) {
     map.addControl(drawControl);
     map.on(L.Draw.Event.CREATED, function (e) {
     var layer = e.layer;
+    if ( L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) < 20000) { 
         bbox=layer.getBounds();
         layer.addTo(editableLayers);
         drawControl.remove(map);
         drawControlEditOnly.addTo(map)
+    } else {
+        alert("object cannot be larger that 20,000m²")
+    }
     });
     map.on("draw:deleted", function(e) {
         drawControlEditOnly.remove(map);
@@ -150,7 +102,7 @@ function openMapPopup(THREE) {
         let bbox_ne = bbox.getNorthEast();
         let bbox_sw = bbox.getSouthWest();
         let bbox_arr = [bbox_ne.lat,bbox_ne.lng,bbox_sw.lat,bbox_sw.lng];
-        stitchTiles("https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=JPWduKmbflkklrVwwG14",22,bbox_arr).then((response)=>{THREE.modify_plane(response)});
+        stitchTiles("HVHZRmOGq3tIWjbcCdhJOGcEF6qA0AOj",22,bbox_arr).then((response)=>{THREE.modify_plane(response)});
         map.off();
         map.remove();
         dialog.remove();

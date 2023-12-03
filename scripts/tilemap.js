@@ -21,12 +21,15 @@ async function stitchTiles(apikey, zoom, bounds) {
   let minLng = bounds[1];
   let maxLat = bounds[2];
   let maxLng = bounds[3];
-
+  const smartClamp = (num) => {
+      return Math.max(Math.min(Math.ceil(num), 1920), 170)
+  
+  }
   var dimensions = [
       haversine([minLat, minLng], [minLat, maxLng]),
       haversine([minLat,minLng], [maxLat, minLng])
   ]
-    return {url:`https://www.mapquestapi.com/staticmap/v5/map?boundingBox=${minLat},${minLng},${maxLat},${maxLng}&size=${Math.ceil(dimensions[1]*10)},${Math.ceil(dimensions[0]*10)}&type=sat&key=${apikey}`,dimensions:dimensions};
+    return {url:`https://www.mapquestapi.com/staticmap/v5/map?boundingBox=${minLat},${minLng},${maxLat},${maxLng}&size=${smartClamp(dimensions[1]*10)},${smartClamp(dimensions[0]*10)}&type=sat&key=${apikey}`,dimensions:dimensions};
 }
 
 function openMapPopup(THREE) {

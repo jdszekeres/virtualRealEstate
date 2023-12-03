@@ -30,6 +30,7 @@ function register_handler(ele, data) {
         // Add the object to the scene
         _3d.blocks.push(draggedObject);
         _3d.scene.add(draggedObject);
+        _properties.set_materials_manager(draggedObject.userData.data,draggedObject);
     }
     // Add event listeners
     ele.addEventListener('mousedown', onMaterialMouseDown, false);
@@ -86,20 +87,21 @@ function handle_keyboard(event) {//move object
             event.preventDefault();
             selected.object.position.x -= 0.05;
         } else if (event.keyCode === 8) {
-            event.preventDefault();
-            let UUID = selected.object.uuid;
-            let id=-1;
-            for (let i=0;i<_3d.blocks.length;i++) {
-                if (_3d.blocks[i].uuid === UUID) {
-                    id = 1
+            if (selected !== null && event.srcElement === document.body) {
+                event.preventDefault();
+                let UUID = selected.object.uuid;
+                let id=-1;
+                for (let i=0;i<_3d.blocks.length;i++) {
+                    if (_3d.blocks[i].uuid === UUID) {
+                        id = 1
+                    }
                 }
+                _properties.unregister_materials(selected);
+                _3d.scene.remove(selected.object);
+                console.log(id)
+                _3d.blocks.pop(id);
+                selected = null;
             }
-            _properties.unregister_materials(selected.object);
-            _3d.scene.remove(selected.object);
-            console.log(id)
-            _3d.blocks.pop(id);
-            selected = null;
-        
         } 
         _3d.renderer.render(_3d.scene, _3d.camera);
     }

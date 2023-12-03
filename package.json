@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "leaflet": "^1.9.4",
     "three": "^0.158.0"
   },
   "devDependencies": {
     "haversine-distance": "^1.2.1",
+    "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "vite": "^5.0.2"
   }

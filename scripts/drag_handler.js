@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import * as _3d from './3d.js';
 import * as _properties from './properties.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 var draggedObject = null;
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -15,10 +16,12 @@ function register_handler(ele, data) {
         // Create a new mesh based on the material clicked in the sidebar
         var size = new THREE.BoxGeometry(data.properties.size.default_width, data.properties.size.default_height, data.properties.size.default_depth)
         if (data.properties.colors !== "all") {
-            var material = new THREE.MeshBasicMaterial({ color: "#" + data.properties.colors[0] });
+            var color = new THREE.Color("#"+data.properties.colors[0])
+            
         } else {
-            var material = new THREE.MeshBasicMaterial({ color: "red" });
+            var color = new THREE.Color("red")
         }
+        var material = new THREE.MeshBasicMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
         draggedObject = new THREE.Mesh(size, material);
         draggedObject.userData.data = data;
         // Calculate the offset between the mouse click position and the center of the dragged object
@@ -101,8 +104,54 @@ function handle_keyboard(event) {//move object
         _3d.renderer.render(_3d.scene, _3d.camera);
     }
 }
+function save(blob, filename) {
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    document.body.removeChild(link);
+  
+    // URL.revokeObjectURL( url ); breaks Firefox...
+  }
+function ondownload() {
+    const exporter = new GLTFExporter();
+    for (let i =0; i < _3d.scene.children.length;i++){
+        let child = _3d.scene.children[i];
+        if(child instanceof _3d.Sky) {
+            child.visible = false;
+        }
+    }
+    
+    exporter.parse(
+        _3d.scene,
+        // called when the gltf has been generated
+        function ( gltf ) {
+    
+            console.log( gltf );
+            save(new Blob([gltf], { type: 'application/octet-stream' }), "world.glb");
+            for (let i =0; i < _3d.scene.children.length;i++){
+                let child = _3d.scene.children[i];
+                if(child instanceof _3d.Sky) {
+                    child.visible = false;
+                }
+            }
+    
+        },
+        // called when there is an error in the generation
+        function ( error ) {
+    
+            console.log( 'An error happened' );
+    
+        },
+        { binary: true}
+    );
+    
+}
 _3d.renderer.domElement.addEventListener("mousemove", onpointermove, false);
 document.addEventListener("keydown", handle_keyboard);
+document.getElementById("download").addEventListener("click", ondownload);
 _3d.renderer.domElement.addEventListener("click", selected_func)
 export { register_handler, pointer, selected };
 

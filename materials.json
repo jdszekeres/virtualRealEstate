@@ -28,6 +28,7 @@
                             "colors": [
                                 "848789"
                             ],
+                            "opacity":1,
                             "shine":50
                         }
                     }
@@ -59,6 +60,7 @@
                     "colors": [
                         "A23617"
                     ],
+                    "opacity":1,
                     "shine":0
                 }
             }
@@ -86,7 +88,57 @@
                         "default_depth": 0.1
                     },
                     "colors":"all",
+                    "opacity":1,
                     "shine":100
+                }
+            }
+        ]
+    },
+    {
+        "name":"Glass",
+        "id":"vre.glass",
+        "type":"class",
+        "children":[
+            {
+                "name":"Glass",
+                "id":"vre.glass.glass",
+                "type":"raw_material",
+                "properties":{
+                    "size":{
+                        "min_width": 1,
+                        "min_height": 1,
+                        "min_depth": 0.0125,
+                        "max_width": 100,
+                        "max_height": 100,
+                        "max_depth": 0.2,
+                        "default_width": 10,
+                        "default_height": 10,
+                        "default_depth": 0.1
+                    },
+                    "colors":["ffffff"],
+                    "shine":0,
+                    "opacity":0.1
+                }
+            },
+            {
+                "name":"Stained Glass",
+                "id":"vre.glass.stained_glass",
+                "type":"raw_material",
+                "properties":{
+                    "size":{
+                        "min_width": 1,
+                        "min_height": 1,
+                        "min_depth": 0.0125,
+                        "max_width": 100,
+                        "max_height": 100,
+                        "max_depth": 0.2,
+                        "default_width": 10,
+                        "default_height": 10,
+                        "default_depth": 0.1
+                    },
+                    "colors":"all",
+                    "shine":0,
+                    "opacity":0.25
                 }
             }
         ]

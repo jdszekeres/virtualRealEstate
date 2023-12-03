@@ -31,10 +31,11 @@ body {
 
 #material-manager {
     flex: 1;
+
 }
 
 #cost-hours-manager {
-    height: 100px;
+    /* height: 100px; */
     margin-top: 10px;
 }
 

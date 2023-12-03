@@ -119,6 +119,7 @@ function unregister_materials(object) {
         object=object.object
         if (object.children) {
             object.remove(...object.children);
+            object.children.needsUpdate=true;
             _3d.renderer.render(_3d.scene,_3d.camera)
         }
         name.innerHTML = "None Selected"

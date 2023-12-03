@@ -21,15 +21,25 @@ async function stitchTiles(apikey, zoom, bounds) {
   let minLng = bounds[1];
   let maxLat = bounds[2];
   let maxLng = bounds[3];
+
+  let a = Math.min(minLat, maxLat);
+  let b = Math.max(minLat, maxLat);
+  let c = Math.min(minLng, maxLng);
+  let d = Math.max(minLng, maxLng);
+  minLat = a;
+  maxLat = b;
+  minLng = c;
+  maxLng = d;
   const smartClamp = (num) => {
-      return Math.max(Math.min(Math.ceil(num), 1920), 170)
+      return Math.ceil(num)
   
   }
   var dimensions = [
-      haversine([minLat, minLng], [minLat, maxLng]),
-      haversine([minLat,minLng], [maxLat, minLng])
+      haversine([minLat,minLng], [maxLat, minLng]),
+      haversine([minLat, minLng], [minLat, maxLng])
+      
   ]
-    return {url:`https://www.mapquestapi.com/staticmap/v5/map?boundingBox=${minLat},${minLng},${maxLat},${maxLng}&size=${smartClamp(dimensions[1]*10)},${smartClamp(dimensions[0]*10)}&type=sat&key=${apikey}`,dimensions:dimensions};
+    return {url:`https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/[${minLng},${minLat},${maxLng},${maxLat}]/${smartClamp(dimensions[0]*10)}x${smartClamp(dimensions[1]*10)}?access_token=${apikey}`,dimensions:dimensions};
 }
 
 function openMapPopup(THREE) {
@@ -105,7 +115,7 @@ function openMapPopup(THREE) {
         let bbox_ne = bbox.getNorthEast();
         let bbox_sw = bbox.getSouthWest();
         let bbox_arr = [bbox_ne.lat,bbox_ne.lng,bbox_sw.lat,bbox_sw.lng];
-        stitchTiles("HVHZRmOGq3tIWjbcCdhJOGcEF6qA0AOj",22,bbox_arr).then((response)=>{THREE.modify_plane(response)});
+        stitchTiles("pk.eyJ1IjoieW9wbyIsImEiOiJjbDA0bzhoM2EwMWhiM2NxajV2Zm1lYmpyIn0.kL4KlQH8tl89C6dJtL31gw",22,bbox_arr).then((response)=>{THREE.modify_plane(response)});
         map.off();
         map.remove();
         dialog.remove();

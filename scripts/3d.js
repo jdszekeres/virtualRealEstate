@@ -69,10 +69,14 @@ if ( WebGL.isWebGLAvailable() ) {
 	document.getElementById( 'container' ).appendChild( warning );
 
 }
-
+window.addEventListener('resize', () => {
+    camera.aspect = _3d_viewer.offsetWidth / document.body.offsetHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(_3d_viewer.offsetWidth, document.body.offsetHeight);
+  });
 function modify_plane(data_block) {
     let dimensions = data_block.dimensions;
-    planeMesh.scale.set(dimensions[1]/100,dimensions[0]/100,1);
+    planeMesh.scale.set(dimensions[0]/100,dimensions[1]/100,1);
     console.log(data_block);
     console.log(planeMesh);
     new THREE.TextureLoader().load(
@@ -84,4 +88,4 @@ function modify_plane(data_block) {
     )
 }
 
-export {camera,renderer,scene,blocks,modify_plane,Sky};
+export {camera,renderer,scene,blocks,modify_plane,Sky,controls};

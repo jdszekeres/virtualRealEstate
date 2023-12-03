@@ -2,3 +2,5 @@
 ## Work in Progress
 Design sketch
 ![Sketch](sketch.png)
+What I have so far 
+![Screenshots](progress.png)

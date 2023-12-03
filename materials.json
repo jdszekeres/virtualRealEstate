@@ -37,36 +37,6 @@
         ]
     },
     {
-        "name":"Cement",
-        "id":"vre.cement",
-        "type":"class",
-        "children":[
-            {
-                "name":"Brick",
-                "id":"vre.cement.brick",
-                "type":"raw_material",
-                "properties": {
-                    "size": {
-                        "min_width": 0.203,
-                        "min_height": 0.92,
-                        "min_depth": 0.57,
-                        "max_width": 0.203,
-                        "max_height": 0.92,
-                        "max_depth": 0.57,
-                        "default_width":0.203,
-                        "default_height": 0.92,
-                        "default_depth": 0.57
-                    },
-                    "colors": [
-                        "A23617"
-                    ],
-                    "opacity":1,
-                    "shine":0
-                }
-            }
-        ]
-    },
-    {
         "name":"Plastic",
         "id":"vre.plastic",
         "type":"class",

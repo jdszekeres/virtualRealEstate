@@ -50,20 +50,28 @@ function selected_func() {
 
     raycaster.setFromCamera(pointer, _3d.camera);
     let intersects = raycaster.intersectObjects(_3d.blocks);
+    console.log(_3d.blocks);
     _properties.unregister_materials(selected);//don't actually delete it, just remove it from materials manager
     if (intersects.length > 0) {
         do {
-            if (intersects.length === 0) {
-                intersects.push(selected)
+            if (intersects.length === 0 || intersects[0] === null) {
+                return;
             }
-            if (intersects[0].object.userData.hasOwnProperty("data")) {
+            
+            if (!(intersects[0].object instanceof THREE.LineSegments)) {
                 break;
             }
+        
             intersects.pop()
         } while (true)
         if (selected) { if (selected.object.uuid === intersects[0].object.uuid) { return; } } //dont't call it if it's already selected
         selected = intersects[0];
         _properties.set_materials_manager(selected.object.userData.data, selected.object);
+        _3d.camera.position.set(selected.object.position.x, selected.object.position.y, selected.object.parent.position.x + 20);
+        _3d.camera.rotation.set(0,0,0);
+        _3d.camera.rotation.needsUpdate = true;
+        console.log(_3d.camera)
+        _3d.controls.update();
         _3d.renderer.render(_3d.scene, _3d.camera);
     } else {
 

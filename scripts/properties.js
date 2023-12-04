@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import * as _3d from './3d.js';
 const name = document.getElementById("mat-name");
 const width_slider = document.getElementById("material-width-slider")
@@ -18,9 +17,12 @@ const rot_y = document.getElementById("ry")
 const rot_z = document.getElementById("rz")
 
 function set_materials_manager(data,object) {//call this when we select an object
-    const edges = new THREE.EdgesGeometry( object.geometry ); 
-    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
-    object.add( line );
+    console.log(object);
+    const edges = new _3d.THREE.EdgesGeometry( object.geometry );
+    if (data.type !== "obj") {//we can't use it on 3d files since they have a diffrent structure
+        const line = new _3d.THREE.LineSegments(edges, new _3d.THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
+        object.add( line );
+    }
     console.log("called")
     name.innerHTML = data["name"]
     let size = data.properties.size
@@ -31,7 +33,7 @@ function set_materials_manager(data,object) {//call this when we select an objec
     height_slider.min = size.min_height
     depth_slider.max = size.max_depth
     depth_slider.min = size.min_depth
-    if (object.scale === new THREE.Vector3(1,1,1)) {
+    if (object.scale === new _3d.THREE.Vector3(1,1,1)) {
         width_slider.value = size.default_width
         height_slider.value = size.default_height
         depth_slider.value = size.default_depth
@@ -54,7 +56,10 @@ function set_materials_manager(data,object) {//call this when we select an objec
     change_length_based_on_slider(height_slider,height_input)
     change_length_based_on_slider(depth_slider,depth_input)
     }
-    setup_sliders()
+    console.log(data.type)
+    if (data.type === 'raw_material') {
+        setup_sliders();
+    }
     function change_all() {
         change_length_based_on_slider(width_slider,width_input)
         change_length_based_on_slider(height_slider,height_input)
@@ -65,43 +70,43 @@ function set_materials_manager(data,object) {//call this when we select an objec
     width_slider.onchange = change_all
     height_slider.onchange = change_all
     depth_slider.onchange = change_all
-    
-    document.getElementById("color-selector").innerHTML=""
-    if (data.properties.colors !== "all") {
-        let select = document.createElement("select")
-        select.id="option-color-selector"
-        data.properties.colors.forEach((hex)=>{
-            let option = document.createElement("option")
-            option.value = hex
-            option.innerHTML = "#"+hex
-            option.style.color="#"+hex
-            select.appendChild(option)
-            
-        })
-        select.addEventListener("change",function () {
-            object.material = new THREE.MeshBasicMaterial({ color: "#" + data.properties.colors[0] });
-        })
-        document.getElementById("color-selector").appendChild(select);
-    
-    } 
-    else {
-        let color_picker = document.createElement("input")
-        color_picker.type = "color"
-        color_picker.value = "#ff0000"
-        color_picker.oninput=function () {
-            object.material = new THREE.MeshBasicMaterial({ color: color_picker.value });
+    if (data.type === 'raw_material') {
+        document.getElementById("color-selector").innerHTML=""
+        if (data.properties.colors !== "all") {
+            let select = document.createElement("select")
+            select.id="option-color-selector"
+            data.properties.colors.forEach((hex)=>{
+                let option = document.createElement("option")
+                option.value = hex
+                option.innerHTML = "#"+hex
+                option.style.color="#"+hex
+                select.appendChild(option)
+                
+            })
+            select.addEventListener("change",function () {
+                object.material = new _3d.THREE.MeshBasicMaterial({ color: "#" + data.properties.colors[0] });
+            })
+            document.getElementById("color-selector").appendChild(select);
         
+        } 
+        else {
+            let color_picker = document.createElement("input")
+            color_picker.type = "color"
+            color_picker.value = "#ff0000"
+            color_picker.oninput=function () {
+                object.material = new _3d.THREE.MeshBasicMaterial({ color: color_picker.value });
+            
+            }
+            document.getElementById("color-selector").appendChild(color_picker);
         }
-        document.getElementById("color-selector").appendChild(color_picker);
     }
-
     pos_x.value = object.position.x
     pos_y.value = object.position.y
     pos_z.value = object.position.z
 
-    rot_x.value = THREE.MathUtils.radToDeg(object.rotation.x)
-    rot_y.value = THREE.MathUtils.radToDeg(object.rotation.y)
-    rot_z.value = THREE.MathUtils.radToDeg(object.rotation.z)
+    rot_x.value = _3d.THREE.MathUtils.radToDeg(object.rotation.x)
+    rot_y.value = _3d.THREE.MathUtils.radToDeg(object.rotation.y)
+    rot_z.value = _3d.THREE.MathUtils.radToDeg(object.rotation.z)
 
     
     
@@ -109,17 +114,20 @@ function set_materials_manager(data,object) {//call this when we select an objec
     pos_y.oninput= ()=>{object.position.y = parseFloat(pos_y.value)}
     pos_z.oninput= ()=>{object.position.z = parseFloat(pos_z.value)}
 
-    rot_x.oninput= ()=>{object.rotation.x = parseFloat(THREE.MathUtils.degToRad(rot_x.value));object.rotation.needsUpdate=true;console.log(object)}
-    rot_y.oninput= ()=>{object.rotation.y = parseFloat(THREE.MathUtils.degToRad(rot_y.value))}
-    rot_z.oninput= ()=>{object.rotation.z = parseFloat(THREE.MathUtils.degToRad(rot_z.value))}
+    rot_x.oninput= ()=>{object.rotation.x = parseFloat(_3d.THREE.MathUtils.degToRad(rot_x.value));object.rotation.needsUpdate=true;console.log(object)}
+    rot_y.oninput= ()=>{object.rotation.y = parseFloat(_3d.THREE.MathUtils.degToRad(rot_y.value))}
+    rot_z.oninput= ()=>{object.rotation.z = parseFloat(_3d.THREE.MathUtils.degToRad(rot_z.value))}
 }
 function unregister_materials(object) {
     
     if (object) {
         object=object.object
         if (object.children) {
-            object.remove(...object.children);
-            object.children.needsUpdate=true;
+            for (let i = 0; i < object.children.length; i++) {
+                if (object.children[i] instanceof _3d.THREE.LineSegments) {
+                    object.remove(object.children[i]);
+                }
+            }
             _3d.renderer.render(_3d.scene,_3d.camera)
         }
         name.innerHTML = "None Selected"

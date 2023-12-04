@@ -3,15 +3,21 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 import { Sky } from 'three/addons/objects/Sky.js';
+import { ViewHelper } from 'three/addons/helpers/ViewHelper.js';
 
 const _3d_viewer = document.getElementById('3d-viewer');
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, _3d_viewer.offsetWidth / document.body.offsetHeight, 0.1, 1000);
 var blocks = [];
-var map = "";
+const clock = new THREE.Clock();
+
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+directionalLight.position.set(-1, 1, 1); // Adjust position based on camera's position
+scene.add(directionalLight);
 
 function init_sky() {
     let sky = new Sky();
+    sky.frustumCulled = false;
     let sun = new THREE.Vector3();
     sky.scale.setScalar( 450000 );
     const uniforms = sky.material.uniforms;
@@ -32,10 +38,19 @@ function init_sky() {
 init_sky();
 // Specify the 3D viewer div as the container for the renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.autoClear = false;
+
 renderer.setSize(_3d_viewer.offsetWidth, document.body.offsetHeight);
 _3d_viewer.appendChild(renderer.domElement);
 renderer.toneMappingExposure = 0.5
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// Add view cube
+const helper = new ViewHelper( camera, renderer.domElement );
+helper.controls = controls;
+// helper.controls.center = controls.target;
+scene.add( new THREE.AxesHelper( 20 ) );
+scene.add( new THREE.AmbientLight( 0x222222 ) );
+
 // Add OrbitControls
 var controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -48,15 +63,19 @@ var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
 
 camera.position.z = 120;
-
 var animate = function () {
+
     requestAnimationFrame(animate);
+    if ( helper.animating ) helper.update( delta );
+    const delta = clock.getDelta();
+    directionalLight.rotation.copy(camera.rotation);
 
     // Update controls
     controls.update();
-    
+      
     // camera.rotation.y ++;
     renderer.render(scene, camera);
+    helper.render(renderer);
 };
 if ( WebGL.isWebGLAvailable() ) {
 
@@ -88,4 +107,4 @@ function modify_plane(data_block) {
     )
 }
 
-export {camera,renderer,scene,blocks,modify_plane,Sky,controls};
+export {camera,renderer,scene,blocks,modify_plane,Sky,controls,THREE};

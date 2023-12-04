@@ -112,5 +112,38 @@
                 }
             }
         ]
+    },
+    {
+        "name":"Flora",
+        "id":"vre.flora",
+        "type":"class",
+        "children":[
+            {
+                "name":"Trees",
+                "id":"vre.trees",
+                "type":"class",
+                "children":[
+                    {
+                        "name":"Oak Tree",
+                        "id":"vre.trees.oak",
+                        "type":"obj",
+                        "properties":{
+                            "obj_file":"/models/flora/trees/low_poly_tree.obj",
+                            "mtl_file":"/models/flora/trees/low_poly_tree.mtl",
+                            "scale":{
+                                "width":1,
+                                "height":1,
+                                "depth":1
+                            },
+                            "rotation":{
+                                "x":90,
+                                "y":0,
+                                "z":0
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
     }
 ]

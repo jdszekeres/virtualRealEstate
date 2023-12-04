@@ -33,7 +33,10 @@ function createDetails(jsonData, parentDetails, _THREE, depth = 0) {
             // Handling items without children
             let div = document.createElement('div');
             div.id = item.id;
-            div.innerHTML = item.name;
+            div.innerHTML = (item.type==="obj"?"⚠️":"")+item.name;
+            if (item.type === "obj") {
+                div.title = "This item is a 3d model and will be computationally expensive to render."
+            }
             div.style.paddingLeft = (depth * 5) + "px";
             item.element = div;
 

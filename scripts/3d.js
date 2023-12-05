@@ -9,6 +9,7 @@ const _3d_viewer = document.getElementById('3d-viewer');
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, _3d_viewer.offsetWidth / document.body.offsetHeight, 0.1, 1000);
 var blocks = [];
+var datas = {};
 const clock = new THREE.Clock();
 
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
@@ -104,4 +105,4 @@ function modify_plane(data_block) {
     )
 }
 
-export {camera,renderer,scene,blocks,modify_plane,Sky,controls,THREE};
+export {camera,renderer,scene,blocks,modify_plane,Sky,controls,THREE,datas};

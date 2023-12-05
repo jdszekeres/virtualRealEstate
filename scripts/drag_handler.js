@@ -6,17 +6,26 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
-var draggedObject = null;
+var object = null;
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 var selected = null;
 
-
+var object;
 
 // Mouse position offset for smoother dragging
 function register_handler(ele, data) {
 
     function onMaterialMouseDown(event) {
+        function until(conditionFunction) {
+
+          const poll = resolve => {
+            if(conditionFunction()) resolve();
+            else setTimeout(_ => poll(resolve), 400);
+          }
+
+          return new Promise(poll);
+        }
         event.preventDefault();
 
         // Create a new mesh based on the material clicked in the sidebar
@@ -30,16 +39,14 @@ function register_handler(ele, data) {
             }
             var material = new THREE.MeshStandardMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
             
-            draggedObject = new THREE.Mesh(size, material);
-            draggedObject.userData.data = data;
+            object = new THREE.Mesh(size, material);
+            object.userData.data = data;
             // Calculate the offset between the mouse click position and the center of the dragged object
-            draggedObject.position.set(0, 0, data.properties.size.default_depth / 2);
-            _3d.camera.position.z = 20 + draggedObject.position.z;
-            // Add the object to the scene
-            _3d.blocks.push(draggedObject);
-            _3d.scene.add(draggedObject);
-            _properties.set_materials_manager(draggedObject.userData.data,draggedObject);
+            object.position.set(0, 0, data.properties.size.default_depth / 2);
+            
         } else if (data.type === 'obj') {
+            
+
             let mtlLoader = new MTLLoader();
             mtlLoader.setPath("models/");
             mtlLoader.load(data.properties.mtl_file, function(materials)
@@ -55,12 +62,10 @@ function register_handler(ele, data) {
                 });
                 materials.materials = mats;
                 objLoader.setMaterials(materials);
-                
-                objLoader.load(data.properties.obj_file, function(object)
+                objLoader.load(data.properties.obj_file, function(obj)
                 {    
-                    var group;
                     var geom = [];
-                    object.traverse(function(child) {
+                    obj.traverse(function(child) {
                         if (child instanceof THREE.Mesh) {
                             
                             var mesh = new THREE.Mesh( child.geometry, child.material);
@@ -73,39 +78,46 @@ function register_handler(ele, data) {
                             mesh.geometry.boundingBox.min.x *= data.properties.scale.width
                             mesh.geometry.boundingBox.min.y *= data.properties.scale.height
                             mesh.geometry.boundingBox.min.z *= data.properties.scale.depth
-
+                            _3d.datas[mesh.uuid] = data;//You select the mesh of the group not the actual group
                             geom.push(mesh.geometry);
-                            console.log(mesh);
                         }
                         
                     });
-                    group = object;
+                    
                     geom = BufferGeometryUtils.mergeGeometries(geom);
                     geom.computeBoundingBox();
                     
-                    group.userData.data = data;
-                    group.position.set(0,0,(geom.boundingBox.max.z-geom.boundingBox.min.z)/2);
-                    group.rotation.set(THREE.MathUtils.degToRad(data.properties.rotation.x),THREE.MathUtils.degToRad(data.properties.rotation.y),THREE.MathUtils.degToRad(data.properties.rotation.z));
-                    group.scale.set(data.properties.scale.width,data.properties.scale.height,data.properties.scale.depth);
-                    group.scale.needsUpdate = true;
-                    group.geometry = geom;
-                    group.geometry.computeBoundingBox();
-                    group.geometry.boundingBox.max.x *= data.properties.scale.width
-                    group.geometry.boundingBox.max.y *= data.properties.scale.height
-                    group.geometry.boundingBox.max.z *= data.properties.scale.depth
-                    group.geometry.boundingBox.min.x *= data.properties.scale.width
-                    group.geometry.boundingBox.min.y *= data.properties.scale.height
-                    group.geometry.boundingBox.min.z *= data.properties.scale.depth
+                    obj.userData.data = data;
+                    obj.position.set(0,0,(geom.boundingBox.max.z-geom.boundingBox.min.z)/2);
+                    obj.rotation.set(THREE.MathUtils.degToRad(data.properties.rotation.x),THREE.MathUtils.degToRad(data.properties.rotation.y),THREE.MathUtils.degToRad(data.properties.rotation.z));
+                    obj.scale.set(data.properties.scale.width,data.properties.scale.height,data.properties.scale.depth);
+                    obj.scale.needsUpdate = true;
+                    obj.geometry = geom;
+                    obj.geometry.computeBoundingBox();
+                    obj.geometry.boundingBox.max.x *= data.properties.scale.width
+                    obj.geometry.boundingBox.max.y *= data.properties.scale.height
+                    obj.geometry.boundingBox.max.z *= data.properties.scale.depth
+                    obj.geometry.boundingBox.min.x *= data.properties.scale.width
+                    obj.geometry.boundingBox.min.y *= data.properties.scale.height
+                    obj.geometry.boundingBox.min.z *= data.properties.scale.depth
 
-                    _3d.camera.position.z = 20 + group.position.z;
-                    _3d.blocks.push(group);
-                    
-                    _3d.scene.add( group );
-                    console.log(group);
-                    _properties.set_materials_manager(data,group);
+                    object = obj;
+                    console.log(obj)
                 });
             });
         }
+        until(_ => object !== null).then(()=>{
+            console.log(object)
+            _3d.camera.position.z = 20 + object.position.z;
+            _3d.blocks.push(object);
+
+            _3d.scene.add( object );
+            _properties.set_materials_manager(data,object);
+            _3d.datas[object.uuid] = data;
+            console.log(_3d.datas)
+        })
+        
+
     }
     // Add event listeners
     ele.addEventListener('mousedown', onMaterialMouseDown, false);
@@ -121,38 +133,65 @@ function onpointermove(event) {
     pointer.y = (y / rect.height) * - 2 + 1
 
 }
-function selected_func() {
-
+var startX;
+var startY;
+function onmousedown(event) {
+    event.preventDefault();
+    onpointermove(event);
+      startX = event.pageX;
+      startY = event.pageY;
+    
+}
+function selected_func(event) {
+    
+    onpointermove(event);
     raycaster.setFromCamera(pointer, _3d.camera);
+    console.log(_3d.camera);
+    console.log(raycaster.intersectObjects(_3d.scene.children))
     let intersects = raycaster.intersectObjects(_3d.blocks);
+    intersects = intersects.filter((arr, index, self) =>
+        index === self.findIndex((t) => (t.object.uuid === arr.object.uuid)))
+
+    console.log(intersects);
     _properties.unregister_materials(selected);//don't actually delete it, just remove it from materials manager
     if (intersects.length > 0) {
-        do {
-            if (intersects.length === 0 || intersects[0] === null) {
-                return;
-            }
-            
-            if (!(intersects[0].object instanceof THREE.LineSegments)) {
-                if (intersects[0].object.parent instanceof THREE.Group) {
-                    intersects[0] = {object:intersects[0].object.parent,distance:intersects[0].distance}
-                }
-                break;
-            }
+    //     do {
+    //         if (!(intersects[0].object instanceof THREE.LineSegments)) {
+    //             if (intersects[0].object.parent instanceof THREE.Group) {
+    //                 intersects[0] = {object:intersects[0].object.parent,distance:intersects[0].distance}
+    //             }
+    //             break;
+    //         }
         
-            intersects.pop()
-        } while (true)
+    //         intersects.pop()
+    //     } while (true)
         if (selected) { if (selected.object.uuid === intersects[0].object.uuid) { return; } } //dont't call it if it's already selected
         selected = intersects[0];
-        _properties.set_materials_manager(selected.object.userData.data, selected.object);
-        _3d.camera.position.set(selected.object.position.x, selected.object.position.y, selected.object.parent.position.x + 20);
-        _3d.camera.rotation.set(0,0,0);
+        var data = _3d.datas[selected.object.uuid];
+        if (!(data)&&(selected.object.hasOwnProperty("parent"))) {
+            if(_3d.datas[selected.object.parent.uuid]) {
+                data = _3d.datas[selected.object.parent.uuid]
+            }
+        }
+        selected.object.userData.data = _3d.datas[selected.object.uuid];
+        console.log(selected)
+        _properties.set_materials_manager(data, selected.object);
         _3d.camera.rotation.needsUpdate = true;
         _3d.controls.update();
         _3d.renderer.render(_3d.scene, _3d.camera);
     } else {
-
-        selected = null;
-    }
+        
+        const diffX = Math.abs(event.pageX - startX);
+        const diffY = Math.abs(event.pageY - startY);
+        console.log(diffX,diffY)
+        if (diffX + diffY < 5) {
+            console.log("not dragged")
+            _properties.unregister_materials(selected);
+            selected = null;
+        } else {
+            console.log("dragged")
+        }
+     }
 }
 function handle_keyboard(event) {//move object
 
@@ -239,6 +278,7 @@ function ondownload() {
 _3d.renderer.domElement.addEventListener("mousemove", onpointermove, false);
 document.addEventListener("keydown", handle_keyboard);
 document.getElementById("download").addEventListener("click", ondownload);
-_3d.renderer.domElement.addEventListener("click", selected_func)
+_3d.renderer.domElement.addEventListener("mousedown",onmousedown);
+_3d.renderer.domElement.addEventListener("mouseup", selected_func)
 export { register_handler, pointer, selected };
 

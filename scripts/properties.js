@@ -17,13 +17,11 @@ const rot_y = document.getElementById("ry")
 const rot_z = document.getElementById("rz")
 
 function set_materials_manager(data,object) {//call this when we select an object
-    console.log(object);
     const edges = new _3d.THREE.EdgesGeometry( object.geometry );
     if (data.type !== "obj") {//we can't use it on 3d files since they have a diffrent structure
         const line = new _3d.THREE.LineSegments(edges, new _3d.THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
         object.add( line );
     }
-    console.log("called")
     name.innerHTML = data["name"]
     let size = data.properties.size
     function setup_sliders() {
@@ -56,7 +54,6 @@ function set_materials_manager(data,object) {//call this when we select an objec
     change_length_based_on_slider(height_slider,height_input)
     change_length_based_on_slider(depth_slider,depth_input)
     }
-    console.log(data.type)
     if (data.type === 'raw_material') {
         setup_sliders();
     }
@@ -119,7 +116,7 @@ function set_materials_manager(data,object) {//call this when we select an objec
     rot_z.oninput= ()=>{object.rotation.z = parseFloat(_3d.THREE.MathUtils.degToRad(rot_z.value))}
 }
 function unregister_materials(object) {
-    
+    document.getElementById("color-selector").innerHTML=""
     if (object) {
         object=object.object
         if (object.children) {

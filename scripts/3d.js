@@ -48,8 +48,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 const helper = new ViewHelper( camera, renderer.domElement );
 helper.controls = controls;
 // helper.controls.center = controls.target;
-scene.add( new THREE.AxesHelper( 20 ) );
-scene.add( new THREE.AmbientLight( 0x222222 ) );
+scene.add( new THREE.AmbientLight( 0x222222,  ) );
 
 // Add OrbitControls
 var controls = new OrbitControls(camera, renderer.domElement);
@@ -96,8 +95,6 @@ window.addEventListener('resize', () => {
 function modify_plane(data_block) {
     let dimensions = data_block.dimensions;
     planeMesh.scale.set(dimensions[0]/100,dimensions[1]/100,1);
-    console.log(data_block);
-    console.log(planeMesh);
     new THREE.TextureLoader().load(
         data_block.url, 
         texture => { 

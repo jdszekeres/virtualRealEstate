@@ -28,7 +28,8 @@ function register_handler(ele, data) {
             } else {
                 var color = new THREE.Color("red")
             }
-            var material = new THREE.MeshBasicMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
+            var material = new THREE.MeshStandardMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
+            
             draggedObject = new THREE.Mesh(size, material);
             draggedObject.userData.data = data;
             // Calculate the offset between the mouse click position and the center of the dragged object
@@ -40,10 +41,12 @@ function register_handler(ele, data) {
             _properties.set_materials_manager(draggedObject.userData.data,draggedObject);
         } else if (data.type === 'obj') {
             let mtlLoader = new MTLLoader();
+            mtlLoader.setPath("models/");
             mtlLoader.load(data.properties.mtl_file, function(materials)
             {
                 materials.preload();
                 var objLoader = new OBJLoader();
+                objLoader.setPath("models/")
                 var mats = {};
                 Object.keys(materials.materials).forEach(function (key) {
                     let mat = materials.materials[key];
@@ -55,33 +58,50 @@ function register_handler(ele, data) {
                 
                 objLoader.load(data.properties.obj_file, function(object)
                 {    
-                    var group = new THREE.Mesh();
+                    var group;
                     var geom = [];
                     object.traverse(function(child) {
                         if (child instanceof THREE.Mesh) {
-                            // if (child.material.color.r + child.material.color.g + child.material.color.b < 3) {
-                                
-                            //     child.material.color.set(child.material.color.r * 255, child.material.color.g * 255, child.material.color.b * 255);
-                            // }
-                            console.log(child.material.color)
-                            var mesh = new THREE.Mesh( child.geometry, new THREE.MeshBasicMaterial({color: 0xff0000}));
-                            group.add(mesh);
+                            
+                            var mesh = new THREE.Mesh( child.geometry, child.material);
+                            mesh.scale.set(data.properties.scale.width,data.properties.scale.height,data.properties.scale.depth);
+                            mesh.geometry.scale = mesh.scale;
+                            mesh.geometry.computeBoundingBox();
+                            mesh.geometry.boundingBox.max.x *= data.properties.scale.width
+                            mesh.geometry.boundingBox.max.y *= data.properties.scale.height
+                            mesh.geometry.boundingBox.max.z *= data.properties.scale.depth
+                            mesh.geometry.boundingBox.min.x *= data.properties.scale.width
+                            mesh.geometry.boundingBox.min.y *= data.properties.scale.height
+                            mesh.geometry.boundingBox.min.z *= data.properties.scale.depth
+
                             geom.push(mesh.geometry);
+                            console.log(mesh);
                         }
                         
                     });
+                    group = object;
                     geom = BufferGeometryUtils.mergeGeometries(geom);
                     geom.computeBoundingBox();
                     
                     group.userData.data = data;
-                    console.log(geom)
-                    group.position.set(0,0,(geom.boundingBox.max.z));
+                    group.position.set(0,0,(geom.boundingBox.max.z-geom.boundingBox.min.z)/2);
                     group.rotation.set(THREE.MathUtils.degToRad(data.properties.rotation.x),THREE.MathUtils.degToRad(data.properties.rotation.y),THREE.MathUtils.degToRad(data.properties.rotation.z));
+                    group.scale.set(data.properties.scale.width,data.properties.scale.height,data.properties.scale.depth);
+                    group.scale.needsUpdate = true;
                     group.geometry = geom;
+                    group.geometry.computeBoundingBox();
+                    group.geometry.boundingBox.max.x *= data.properties.scale.width
+                    group.geometry.boundingBox.max.y *= data.properties.scale.height
+                    group.geometry.boundingBox.max.z *= data.properties.scale.depth
+                    group.geometry.boundingBox.min.x *= data.properties.scale.width
+                    group.geometry.boundingBox.min.y *= data.properties.scale.height
+                    group.geometry.boundingBox.min.z *= data.properties.scale.depth
+
                     _3d.camera.position.z = 20 + group.position.z;
                     _3d.blocks.push(group);
                     
                     _3d.scene.add( group );
+                    console.log(group);
                     _properties.set_materials_manager(data,group);
                 });
             });
@@ -115,7 +135,6 @@ function selected_func() {
             if (!(intersects[0].object instanceof THREE.LineSegments)) {
                 if (intersects[0].object.parent instanceof THREE.Group) {
                     intersects[0] = {object:intersects[0].object.parent,distance:intersects[0].distance}
-                    console.log(intersects[0].object)
                 }
                 break;
             }
@@ -128,7 +147,6 @@ function selected_func() {
         _3d.camera.position.set(selected.object.position.x, selected.object.position.y, selected.object.parent.position.x + 20);
         _3d.camera.rotation.set(0,0,0);
         _3d.camera.rotation.needsUpdate = true;
-        console.log(_3d.camera)
         _3d.controls.update();
         _3d.renderer.render(_3d.scene, _3d.camera);
     } else {
@@ -180,6 +198,12 @@ function save(blob, filename) {
     link.download = filename;
     link.click();
     document.body.removeChild(link);
+    for (let i =0; i < _3d.scene.children.length;i++){
+        let child = _3d.scene.children[i];
+        if(child instanceof _3d.Sky) {
+            child.visible = true;
+        }
+    }
   
     // URL.revokeObjectURL( url ); breaks Firefox...
   }
@@ -187,7 +211,7 @@ function ondownload() {
     const exporter = new GLTFExporter();
     for (let i =0; i < _3d.scene.children.length;i++){
         let child = _3d.scene.children[i];
-        if(child instanceof _3d.Sky) {
+        if(child instanceof _3d.Sky) {console.log(child)
             child.visible = false;
         }
     }
@@ -199,12 +223,7 @@ function ondownload() {
     
             console.log( gltf );
             save(new Blob([gltf], { type: 'application/octet-stream' }), "world.glb");
-            for (let i =0; i < _3d.scene.children.length;i++){
-                let child = _3d.scene.children[i];
-                if(child instanceof _3d.Sky) {
-                    child.visible = false;
-                }
-            }
+            
     
         },
         // called when there is an error in the generation

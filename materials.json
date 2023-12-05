@@ -128,12 +128,12 @@
                         "id":"vre.trees.oak",
                         "type":"obj",
                         "properties":{
-                            "obj_file":"/models/flora/trees/low_poly_tree.obj",
-                            "mtl_file":"/models/flora/trees/low_poly_tree.mtl",
+                            "obj_file":"flora/trees/Lowpoly_tree_sample.obj",
+                            "mtl_file":"flora/trees/Lowpoly_tree_sample.mtl",
                             "scale":{
-                                "width":1,
-                                "height":1,
-                                "depth":1
+                                "width":0.5,
+                                "height":0.5,
+                                "depth":0.5
                             },
                             "rotation":{
                                 "x":90,

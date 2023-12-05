@@ -144,8 +144,7 @@ function selected_func() {
         if (selected) { if (selected.object.uuid === intersects[0].object.uuid) { return; } } //dont't call it if it's already selected
         selected = intersects[0];
         _properties.set_materials_manager(selected.object.userData.data, selected.object);
-        _3d.camera.position.set(selected.object.position.x, selected.object.position.y, selected.object.parent.position.x + 20);
-        _3d.camera.rotation.set(0,0,0);
+        _3d.controls.center = new _3d.THREE.Vector3(selected.object.x, selected.object.y, selected.object.z)
         _3d.camera.rotation.needsUpdate = true;
         _3d.controls.update();
         _3d.renderer.render(_3d.scene, _3d.camera);

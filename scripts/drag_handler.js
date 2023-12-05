@@ -167,6 +167,7 @@ function selected_func(event) {
     //     } while (true)
         if (selected) { if (selected.object.uuid === intersects[0].object.uuid) { return; } } //dont't call it if it's already selected
         selected = intersects[0];
+
         var data = _3d.datas[selected.object.uuid];
         if (!(data)&&(selected.object.hasOwnProperty("parent"))) {
             if(_3d.datas[selected.object.parent.uuid]) {
@@ -176,6 +177,7 @@ function selected_func(event) {
         selected.object.userData.data = _3d.datas[selected.object.uuid];
         console.log(selected)
         _properties.set_materials_manager(data, selected.object);
+
         _3d.camera.rotation.needsUpdate = true;
         _3d.controls.update();
         _3d.renderer.render(_3d.scene, _3d.camera);

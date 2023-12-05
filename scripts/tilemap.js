@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import {OpenStreetMapProvider,GeoSearchControl} from 'leaflet-geosearch';
+import 'leaflet-geosearch/dist/geosearch.css';
 import haversine from 'haversine-distance'
 
 window.type = true; //bugfix
@@ -52,9 +53,10 @@ function openMapPopup(THREE) {
     }).addTo(map);
     const provider = new OpenStreetMapProvider();
     const search = new GeoSearchControl({
-      provider: provider
-    });
-    map.addControl(search); 
+      provider: provider,
+      style: "bar"
+    }).addTo(map);
+    
     var editableLayers = new L.FeatureGroup();
     map.addLayer(editableLayers);
 

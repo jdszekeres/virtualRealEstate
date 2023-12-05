@@ -23,6 +23,9 @@ async function stitchTiles(apikey, bounds) {
     maxLat = b;
     minLng = c;
     maxLng = d;
+    console.log(minLat,minLng)
+    console.log(maxLat,maxLng)
+    
     const smartClamp = (num) => {
         return Math.max(Math.min(Math.ceil(num), 1280), 1);
 
@@ -32,12 +35,26 @@ async function stitchTiles(apikey, bounds) {
         haversine([minLat, minLng], [minLat, maxLng])
 
     ]
-    return { url: `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/[${minLng},${minLat},${maxLng},${maxLat}]/${smartClamp(dimensions[0] * 10)}x${smartClamp(dimensions[1] * 10)}?access_token=${apikey}`, dimensions: dimensions };
+    dimensions.reverse();
+    
+    // let di = Array.from(dimensions)
+    // if (di[0] > 128 || di[1]>128) {
+    //     if (di[0] > di[1]) {
+    //         let aspect_ratio = di[1] / di[0]
+    //         di[0] = 128;
+    //         di[1] = 128 * aspect_ratio;
+    //     } else {
+    //         let aspect_ratio = di[0] / di[1]
+    //         di[1] = 128;
+    //         di[0] = 128 * aspect_ratio;
+    //     }
+    // }
+    return { url: `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/[${minLng},${minLat},${maxLng},${maxLat}]/${smartClamp(dimensions[0] * 5)}x${smartClamp(dimensions[1] * 5)}@2x?padding=10,10,10,10access_token=${apikey}`, dimensions: dimensions };
 }
 
 function openMapPopup(THREE) {
     let dialog = document.createElement('dialog');
-    dialog.style = "position:absolute;width:50%;height:50%;top:25%;left:25%"
+    dialog.style = "position:absolute;width:60%;height:75%;top:50%;left:50%;transform: translate(-50%, -50%);"
     let map_div = document.createElement("div");
     dialog.appendChild(map_div);
     map_div.style = "height:calc(100% - 50px);width:100%"

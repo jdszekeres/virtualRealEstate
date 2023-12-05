@@ -81,7 +81,7 @@ function set_materials_manager(data,object) {//call this when we select an objec
                 
             })
             select.addEventListener("change",function () {
-                object.material = new _3d.THREE.MeshBasicMaterial({ color: "#" + data.properties.colors[0] });
+                object.material.color.setHex( "#" + data.properties.colors[0] );
             })
             document.getElementById("color-selector").appendChild(select);
         

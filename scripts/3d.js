@@ -94,6 +94,7 @@ window.addEventListener('resize', () => {
     renderer.setSize(_3d_viewer.offsetWidth, document.body.offsetHeight);
   });
 function modify_plane(data_block) {
+    console.log(data_block)
     let dimensions = data_block.dimensions;
     planeMesh.scale.set(dimensions[0]/100,dimensions[1]/100,1);
     new THREE.TextureLoader().load(

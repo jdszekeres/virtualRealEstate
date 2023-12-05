@@ -38,8 +38,8 @@ function register_handler(ele, data) {
                 var color = new THREE.Color("red")
             }
             var material = new THREE.MeshStandardMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
-            
             object = new THREE.Mesh(size, material);
+            setTimeout(()=>{object.material.color = color},1000)
             object.userData.data = data;
             // Calculate the offset between the mouse click position and the center of the dragged object
             object.position.set(0, 0, data.properties.size.default_depth / 2);
@@ -108,7 +108,7 @@ function register_handler(ele, data) {
         }
         until(_ => object !== null).then(()=>{
             console.log(object)
-            _3d.camera.position.z = 20 + object.position.z;
+            _3d.controls.center = object.position;
             _3d.blocks.push(object);
 
             _3d.scene.add( object );
@@ -146,13 +146,10 @@ function selected_func(event) {
     
     onpointermove(event);
     raycaster.setFromCamera(pointer, _3d.camera);
-    console.log(_3d.camera);
-    console.log(raycaster.intersectObjects(_3d.scene.children))
     let intersects = raycaster.intersectObjects(_3d.blocks);
     intersects = intersects.filter((arr, index, self) =>
         index === self.findIndex((t) => (t.object.uuid === arr.object.uuid)))
 
-    console.log(intersects);
     _properties.unregister_materials(selected);//don't actually delete it, just remove it from materials manager
     if (intersects.length > 0) {
     //     do {
@@ -171,11 +168,11 @@ function selected_func(event) {
         var data = _3d.datas[selected.object.uuid];
         if (!(data)&&(selected.object.hasOwnProperty("parent"))) {
             if(_3d.datas[selected.object.parent.uuid]) {
-                data = _3d.datas[selected.object.parent.uuid]
+                selected = {object:selected.object.parent}
+                data = _3d.datas[selected.object.uuid]
             }
         }
         selected.object.userData.data = _3d.datas[selected.object.uuid];
-        console.log(selected)
         _properties.set_materials_manager(data, selected.object);
 
         _3d.camera.rotation.needsUpdate = true;
@@ -187,11 +184,8 @@ function selected_func(event) {
         const diffY = Math.abs(event.pageY - startY);
         console.log(diffX,diffY)
         if (diffX + diffY < 5) {
-            console.log("not dragged")
             _properties.unregister_materials(selected);
             selected = null;
-        } else {
-            console.log("dragged")
         }
      }
 }
@@ -212,6 +206,7 @@ function handle_keyboard(event) {//move object
             event.preventDefault();
             selected.object.position.x -= 0.05;
         } else if (event.keyCode === 8) {
+            console.log(selected);
             if (selected !== null && event.srcElement === document.body) {
                 event.preventDefault();
                 let UUID = selected.object.uuid;

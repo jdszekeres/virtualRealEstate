@@ -37,7 +37,7 @@ function register_handler(ele, data) {
             } else {
                 var color = new THREE.Color("red")
             }
-            var material = new THREE.MeshStandardMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
+            var material = new THREE.MeshBasicMaterial({ color: color, transparent: data.properties.opacity !== 1, opacity:data.properties.opacity});
             object = new THREE.Mesh(size, material);
             setTimeout(()=>{object.material.color = color},1000)
             object.userData.data = data;

@@ -49,7 +49,7 @@ async function stitchTiles(apikey, bounds) {
     //         di[0] = 128 * aspect_ratio;
     //     }
     // }
-    return { url: `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/[${minLng},${minLat},${maxLng},${maxLat}]/${smartClamp(dimensions[0] * 5)}x${smartClamp(dimensions[1] * 5)}@2x?padding=10,10,10,10access_token=${apikey}`, dimensions: dimensions };
+    return { url: `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/[${minLng},${minLat},${maxLng},${maxLat}]/${smartClamp(dimensions[0] * 5)}x${smartClamp(dimensions[1] * 5)}@2x?padding=10,10,10,10&access_token=${apikey}`, dimensions: dimensions };
 }
 
 function openMapPopup(THREE) {
